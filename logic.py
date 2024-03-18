@@ -106,16 +106,27 @@ def lotes_a_txt():
 #Funcion para escribir resultados a un archivo
 def resultados_a_txt():
     global lotes_terminados 
+    calculos = []
     with open('Resultados.txt', 'w') as file:            
         for proceso in lotes_terminados: #Muestra los procesos terminados
             if type(proceso) == str:
                 file.write(f"{proceso}\n\n")
             else:
+                calculos.append(proceso)
                 if proceso['error']:
                     file.write(f"{proceso['numero_programa']}. {proceso['nombre']}\n{proceso['operacion']}\n\n")
                 else:
                     resultado = round(eval(proceso['operacion']), 4)
                     file.write(f"{proceso['numero_programa']}. {proceso['nombre']}\n{proceso['operacion']} = {resultado}\n\n")
+        file.write('\n')
+        file.write('Calculos:\n')
+        file.write('------------------------------------------------------------------------------------------------')
+        file.write('\n: Proceso : T. Llegada : T. Espera : T. Respuesta : T. Servicio : T. Retorno : T. Finalizacion :\n')
+        file.write('------------------------------------------------------------------------------------------------\n')
+        
+        for proceso in calculos:
+            tabla = f": {proceso['numero_programa']}{" "*(8-len(str(proceso['numero_programa'])))}: {proceso['tiempo_llegada']}{" "*(11-len(str(proceso['tiempo_llegada'])))}: {proceso['tiempo_espera']}{" "*(10-len(str(proceso['tiempo_espera'])))}: {proceso['tiempo_respuesta']}{" "*(13-len(str(proceso['tiempo_respuesta'])))}: {proceso['tiempo_servicio']}{" "*(12-len(str(proceso['tiempo_servicio'])))}: {proceso['tiempo_retorno']}{" "*(11-len(str(proceso['tiempo_retorno'])))}: {proceso['tiempo_finalizacion']}{" "*(16-len(str(proceso['tiempo_finalizacion'])))}:"
+            file.write(f"{tabla}\n")
 
 
 def en_espera(lotes, procesosEnEspera_text):
@@ -196,6 +207,7 @@ def terminados(lotes, terminados_text, procesos_terminados, tiempo_restante, tie
     # Si todos los lotes están vacíos, habilita el botón obtenerResultadosBtn
     if not lotes:
         lotes_terminados = copy.deepcopy(procesos_terminados)
+        print(lotes_terminados)
         obtenerResultadosBtn.config(state='normal')
         stop_clock() #Detiene el reloj si no hay más procesos
     
