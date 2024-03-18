@@ -155,8 +155,8 @@ def en_ejecucion(lotes, ejecucion_text, tiempo_inicio_proceso):
     
     lote_actual = lotes[0]  # Toma el primer lote
     procesoEnEjecucion = lote_actual[0]  # Toma el primer proceso en espera
-    
     if tiempo_inicio_proceso is None:  # Si es la primera vez que se llama a la función para este proceso
+        procesoEnEjecucion['tiempo_respuesta'] = round(time.time() - start_time - procesoEnEjecucion['tiempo_llegada'])  # Asigna el tiempo de respuesta (tiempo transcurrido desde que llega hasta que es atendido por primera vez
         tiempo_inicio_proceso = time.time() - start_time
         tiempo_transcurrido_proceso = 0
         
@@ -189,7 +189,10 @@ def terminados(lotes, terminados_text, procesos_terminados, tiempo_restante, tie
             procesos_terminados.append(f"Lote {num_lote}:")  # Añadimos el número de lote
             num_lote += 1
         procesos_terminados.append(lote_actual.pop(0))  # Elimina el proceso de la lista de procesos en espera y lo añade a la lista de procesos terminados
+        
         procesos_terminados[-1]['tiempo_finalizacion'] = round(time.time() - start_time)  # Asigna el tiempo de finalización
+        procesos_terminados[-1]['tiempo_retorno'] = procesos_terminados[-1]['tiempo_finalizacion'] - procesos_terminados[-1]['tiempo_llegada']  # Calcula el tiempo de retorno
+        
         end_lote = False
         cont_procesos += 1
         tiempo_inicio_proceso = None  # Resetea el tiempo de inicio para el próximo proceso
