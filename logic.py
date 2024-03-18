@@ -52,7 +52,7 @@ def crear_lotes(n):
     num_programa = 1
     global lotes
     lote = []
-    
+    tiempo_llegada = 0
     for i in range(n):
         tiempo_maximo = getTiempoMaxEstimado()
         proceso = {
@@ -62,11 +62,19 @@ def crear_lotes(n):
             'tiempo_restante': tiempo_maximo,
             'numero_programa': num_programa,
             'interrumpido': False,
-            'error': False
+            'error': False,
+            'tiempo_llegada': tiempo_llegada, #Hora en la que el proceso entra al sistema.
+            'tiempo_finalizacion': None, #Hora en la que el proceso termino.
+            'tiempo_retorno': None, #Tiempo total desde que el proceso llega hasta que termina.
+            'tiempo_espera': None, #Tiempo que el proceso ha estado esperando para usar el procesador.
+            'tiempo_servicio': tiempo_maximo, #Tiempo que el proceso ha estado dentro del procesador.
+            'tiempo_respuesta': None # Tiempo transcurrido desde que llega hasta que es atendido por primera vez.
+            
         }
         
         lote.append(proceso)
         num_programa += 1
+        tiempo_llegada += 1
         
         if len(lote) == 5:
             lotes.append(lote)
@@ -113,6 +121,7 @@ def resultados_a_txt():
 def en_espera(lotes, procesosEnEspera_text):
     global end_lote
     lote_actual = lotes[0]
+
     if len(lote_actual) == 1:  # Si solo queda un proceso en el lote actual
         end_lote = True
         if lotes[1:]:
