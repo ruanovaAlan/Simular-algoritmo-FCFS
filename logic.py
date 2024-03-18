@@ -184,11 +184,12 @@ def terminados(lotes, terminados_text, procesos_terminados, tiempo_restante, tie
     lote_actual = lotes[0]
     global num_lote, cont_procesos, lotes_terminados, end_lote
     
-    if tiempo_restante <= 0:  #? cambiar el tiempo a 0
+    if tiempo_restante <= 0: 
         if len(procesos_terminados) == 0 or cont_procesos % 5 == 0:  # Si hemos terminado 5 procesos
             procesos_terminados.append(f"Lote {num_lote}:")  # Añadimos el número de lote
             num_lote += 1
         procesos_terminados.append(lote_actual.pop(0))  # Elimina el proceso de la lista de procesos en espera y lo añade a la lista de procesos terminados
+        procesos_terminados[-1]['tiempo_finalizacion'] = round(time.time() - start_time)  # Asigna el tiempo de finalización
         end_lote = False
         cont_procesos += 1
         tiempo_inicio_proceso = None  # Resetea el tiempo de inicio para el próximo proceso
@@ -211,7 +212,6 @@ def terminados(lotes, terminados_text, procesos_terminados, tiempo_restante, tie
     # Si todos los lotes están vacíos, habilita el botón obtenerResultadosBtn
     if not lotes:
         lotes_terminados = copy.deepcopy(procesos_terminados)
-        print(lotes_terminados)
         obtenerResultadosBtn.config(state='normal')
         stop_clock() #Detiene el reloj si no hay más procesos
     
