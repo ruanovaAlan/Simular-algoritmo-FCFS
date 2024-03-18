@@ -103,6 +103,18 @@ def lotes_a_txt():
                     file.write('\n')
                 file.write('\n')
 
+
+def tabla_calculos_tiempos(calculos, file):
+    file.write('\n')
+    file.write('Calculos:\n')
+    file.write('------------------------------------------------------------------------------------------------')
+    file.write('\n: Proceso : T. Llegada : T. Espera : T. Respuesta : T. Servicio : T. Retorno : T. Finalizacion :\n')
+    file.write('------------------------------------------------------------------------------------------------\n')
+    
+    for proceso in calculos:
+        tabla = f": {proceso['numero_programa']}{" "*(8-len(str(proceso['numero_programa'])))}: {proceso['tiempo_llegada']}{" "*(11-len(str(proceso['tiempo_llegada'])))}: {proceso['tiempo_espera']}{" "*(10-len(str(proceso['tiempo_espera'])))}: {proceso['tiempo_respuesta']}{" "*(13-len(str(proceso['tiempo_respuesta'])))}: {proceso['tiempo_servicio']}{" "*(12-len(str(proceso['tiempo_servicio'])))}: {proceso['tiempo_retorno']}{" "*(11-len(str(proceso['tiempo_retorno'])))}: {proceso['tiempo_finalizacion']}{" "*(16-len(str(proceso['tiempo_finalizacion'])))}:"
+        file.write(f"{tabla}\n")
+
 #Funcion para escribir resultados a un archivo
 def resultados_a_txt():
     global lotes_terminados 
@@ -118,15 +130,7 @@ def resultados_a_txt():
                 else:
                     resultado = round(eval(proceso['operacion']), 4)
                     file.write(f"{proceso['numero_programa']}. {proceso['nombre']}\n{proceso['operacion']} = {resultado}\n\n")
-        file.write('\n')
-        file.write('Calculos:\n')
-        file.write('------------------------------------------------------------------------------------------------')
-        file.write('\n: Proceso : T. Llegada : T. Espera : T. Respuesta : T. Servicio : T. Retorno : T. Finalizacion :\n')
-        file.write('------------------------------------------------------------------------------------------------\n')
-        
-        for proceso in calculos:
-            tabla = f": {proceso['numero_programa']}{" "*(8-len(str(proceso['numero_programa'])))}: {proceso['tiempo_llegada']}{" "*(11-len(str(proceso['tiempo_llegada'])))}: {proceso['tiempo_espera']}{" "*(10-len(str(proceso['tiempo_espera'])))}: {proceso['tiempo_respuesta']}{" "*(13-len(str(proceso['tiempo_respuesta'])))}: {proceso['tiempo_servicio']}{" "*(12-len(str(proceso['tiempo_servicio'])))}: {proceso['tiempo_retorno']}{" "*(11-len(str(proceso['tiempo_retorno'])))}: {proceso['tiempo_finalizacion']}{" "*(16-len(str(proceso['tiempo_finalizacion'])))}:"
-            file.write(f"{tabla}\n")
+        tabla_calculos_tiempos(calculos, file)
 
 
 def en_espera(lotes, procesosEnEspera_text):
