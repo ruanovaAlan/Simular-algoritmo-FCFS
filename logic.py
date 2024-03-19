@@ -10,8 +10,10 @@ clock_running = True #Variable para validar si el reloj esta corriendo
 lotes = [] #Array de lotes
 lotes_terminados = [] #Array de lotes terminados
 num_lote = 1 #Variable para el número de lote para los procesos terminados
-end_lote = False
+end_lote = False #Variable para validar si el lote actual termino
 cont_procesos = 0 #Variable para contar los procesos terminados
+tiempo_en_espera = 0 #Variable para el tiempo en espera
+
 
 
 
@@ -63,12 +65,13 @@ def crear_lotes(n):
             'numero_programa': num_programa,
             'interrumpido': False,
             'error': False,
+            'tiempo_inicio': None,
             'tiempo_llegada': tiempo_llegada, #Hora en la que el proceso entra al sistema.
-            'tiempo_finalizacion': None, #Hora en la que el proceso termino.
-            'tiempo_retorno': None, #Tiempo total desde que el proceso llega hasta que termina.
-            'tiempo_espera': None, #Tiempo que el proceso ha estado esperando para usar el procesador.
-            'tiempo_servicio': tiempo_maximo, #Tiempo que el proceso ha estado dentro del procesador.
-            'tiempo_respuesta': None # Tiempo transcurrido desde que llega hasta que es atendido por primera vez.
+            'tiempo_finalizacion': 0, #Hora en la que el proceso termino.
+            'tiempo_retorno': 0, #Tiempo total desde que el proceso llega hasta que termina.
+            'tiempo_espera': 0, #Tiempo que el proceso ha estado esperando para usar el procesador.
+            'tiempo_servicio': 0, #Tiempo que el proceso ha estado dentro del procesador.
+            'tiempo_respuesta': 0 # Tiempo transcurrido desde que llega hasta que es atendido por primera vez.
             
         }
         
@@ -134,14 +137,17 @@ def resultados_a_txt():
 
 
 def en_espera(lotes, procesosEnEspera_text):
-    global end_lote
+    global end_lote, tiempo_en_espera
     lote_actual = lotes[0]
 
     if len(lote_actual) == 1:  # Si solo queda un proceso en el lote actual
         end_lote = True
+        # tiempo_en_espera = 0
         if lotes[1:]:
             lote_siguiente = lotes.pop(1)  # Toma el siguiente lote
             lote_actual.extend(lote_siguiente)
+    
+    tiempo_en_espera += 1
             
     procesosEnEspera_text.delete('1.0', END)  
     for proceso in lote_actual[1:]:
@@ -149,19 +155,27 @@ def en_espera(lotes, procesosEnEspera_text):
             procesosEnEspera_text.insert(END, f"{proceso['numero_programa']}. {proceso['nombre']}\n{proceso['operacion']}\nTME: {proceso['tiempo_maximo']}\nTiempo restante: {round(proceso['tiempo_restante'])}\n\n")
         else:
             procesosEnEspera_text.insert(END, f"{proceso['numero_programa']}. {proceso['nombre']}\n{proceso['operacion']}\nTME: {proceso['tiempo_maximo']}\n\n")
+        
+        proceso['tiempo_espera'] = tiempo_en_espera - proceso['tiempo_llegada'] # Asigna el tiempo de espera
 
 def en_ejecucion(lotes, ejecucion_text, tiempo_inicio_proceso):
     global tiempo_transcurrido_proceso
     
     lote_actual = lotes[0]  # Toma el primer lote
     procesoEnEjecucion = lote_actual[0]  # Toma el primer proceso en espera
+    
     if tiempo_inicio_proceso is None:  # Si es la primera vez que se llama a la función para este proceso
-        procesoEnEjecucion['tiempo_respuesta'] = round(time.time() - start_time - procesoEnEjecucion['tiempo_llegada'])  # Asigna el tiempo de respuesta (tiempo transcurrido desde que llega hasta que es atendido por primera vez
         tiempo_inicio_proceso = time.time() - start_time
         tiempo_transcurrido_proceso = 0
+    
+    if procesoEnEjecucion['tiempo_inicio'] is None and procesoEnEjecucion['interrumpido'] == False:
+        procesoEnEjecucion['tiempo_inicio'] = round(time.time() - start_time)
+        procesoEnEjecucion['tiempo_respuesta'] = procesoEnEjecucion['tiempo_inicio']  # Asigna el tiempo de respuesta (tiempo transcurrido desde que llega hasta que es atendido por primera vez
         
     tiempo_transcurrido_proceso += 1
     tiempo_transcurrido = tiempo_transcurrido_proceso
+    
+    procesoEnEjecucion['tiempo_servicio'] += 1  # Asigna el tiempo de servicio
     
     if procesoEnEjecucion['error']:  # If the process has an error
         tiempo_restante = 0
@@ -190,8 +204,8 @@ def terminados(lotes, terminados_text, procesos_terminados, tiempo_restante, tie
             num_lote += 1
         procesos_terminados.append(lote_actual.pop(0))  # Elimina el proceso de la lista de procesos en espera y lo añade a la lista de procesos terminados
         
-        procesos_terminados[-1]['tiempo_finalizacion'] = round(time.time() - start_time)  # Asigna el tiempo de finalización
-        procesos_terminados[-1]['tiempo_retorno'] = procesos_terminados[-1]['tiempo_finalizacion'] - procesos_terminados[-1]['tiempo_llegada']  # Calcula el tiempo de retorno
+        procesos_terminados[-1]['tiempo_finalizacion'] = round(time.time() - start_time + 1)   # Asigna el tiempo de finalización
+        procesos_terminados[-1]['tiempo_retorno'] = procesos_terminados[-1]['tiempo_finalizacion'] - procesos_terminados[-1]['tiempo_llegada'] # Calcula el tiempo de retorno
         
         end_lote = False
         cont_procesos += 1
