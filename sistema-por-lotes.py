@@ -19,7 +19,7 @@ noProcesos_entry = ttk.Entry(enEsperaFrame, width=8)
 enEspera_label = ttk.Label(enEsperaFrame, text="EN ESPERA") #Procesos en espera
 procesosEnEspera_text = Text(enEsperaFrame, width=20, height=20)
 
-noLotesPendientes_label = ttk.Label(enEsperaFrame, text="# De lotes pendientes") #Número de lotes pendientes
+noLotesPendientes_label = ttk.Label(enEsperaFrame, text="# De procesos pendientes") #Número de lotes pendientes
 #----------------------------------
 
 #contenido del frame "en ejecución"

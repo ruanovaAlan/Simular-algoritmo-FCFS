@@ -242,12 +242,11 @@ def ejecutar_proceso(lotes, noLotesPendientes_label, ejecucion_text, root, proce
         en_espera(lotes, procesosEnEspera_text) #Funcion para mostrar los procesos en espera
         #Funcion para mostrar los procesos terminados
         tiempo_inicio_proceso = terminados(lotes, terminados_text, procesos_terminados, tiempo_restante, tiempo_inicio_proceso, ejecucion_text, obtenerResultadosBtn)
-        cantidad_lotes = max(0, len(lotes) - 1) #Si no hay lotes, se muestra 0
+        cantidad_procesos = sum(len(lote) for lote in lotes) - len(lotes[0]) if lotes else 0  # Suma de la cantidad de procesos en todos los lotes
         # Actualiza el número de lotes pendientes
-        noLotesPendientes_label.config(text=f"# De lotes pendientes: {cantidad_lotes}")
+        noLotesPendientes_label.config(text=f"# De procesos pendientes: {cantidad_procesos}")
         # Llama a la función de nuevo después de 1 segundo
         root.after(1000, ejecutar_proceso, lotes, noLotesPendientes_label, ejecucion_text, root, procesosEnEspera_text, terminados_text, obtenerResultadosBtn, procesos_terminados, tiempo_inicio_proceso)
-
 
 #Funcion para generar procesos y ejecutarlos
 def generar_procesos(noProcesos_entry, ejecucion_text, noLotesPendientes_label, root, procesosEnEspera_text, terminados_text, obtenerResultadosBtn, relojGlobal_label):
