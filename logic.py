@@ -49,11 +49,11 @@ def getOperacion():
 
 
 #Funcion para generar lotes de procesos con datos aleatorios
-def crear_lotes(n):
+def crear_procesos(n):
     nombre_programadores = ['Alan', 'Juan', 'Jenny', 'Luis', 'Maria', 'Pedro', 'Sofia', 'Tom', 'Valeria', 'Ximena']
     num_programa = 1
     global lotes
-    lote = []
+    #lote = []
     tiempo_llegada = 0
     for i in range(n):
         tiempo_maximo = getTiempoMaxEstimado()
@@ -75,16 +75,16 @@ def crear_lotes(n):
             
         }
         
-        lote.append(proceso)
+        lotes.append(proceso)
         num_programa += 1
-        tiempo_llegada += 1
+    #     #tiempo_llegada += 1
         
-        if len(lote) == 5:
-            lotes.append(lote)
+    #     if len(lote) == 5:
+    #         lotes.append(lote)
             
-            lote = []
-    if lote:
-        lotes.append(lote)
+    #         lote = []
+    # if lote:
+    #     lotes.append(lote)
 
 
 
@@ -95,16 +95,16 @@ def lotes_a_txt():
     global lotes
     if lotes != []:
         with open('datos.txt', 'w') as file:
-            for i, lote in enumerate(lotes, start=1):
-                file.write(f'Lote {i}:\n')
+            # for i, lote in enumerate(lotes, start=1):
+            #     file.write(f'Lote {i}:\n')
+            #     file.write('\n')
+            for proceso in lotes:
+                file.write(f"{proceso['numero_programa']}. {proceso['nombre']}\n")
+                file.write(f"{proceso['operacion']}\n")
+                file.write(f"TME: {proceso['tiempo_maximo']}\n")
                 file.write('\n')
-                for proceso in lote:
-                    file.write(f"{proceso['numero_programa']}. {proceso['nombre']}\n")
-                    file.write(f"{proceso['operacion']}\n")
-                    file.write(f"TME: {proceso['tiempo_maximo']}\n")
-                    file.write('\n')
-                    file.write('\n')
                 file.write('\n')
+            file.write('\n')
 
 
 def tabla_calculos_tiempos(calculos, file):
@@ -115,7 +115,10 @@ def tabla_calculos_tiempos(calculos, file):
     file.write('------------------------------------------------------------------------------------------------\n')
     
     for proceso in calculos:
-        tabla = f": {proceso['numero_programa']}{" "*(8-len(str(proceso['numero_programa'])))}: {proceso['tiempo_llegada']}{" "*(11-len(str(proceso['tiempo_llegada'])))}: {proceso['tiempo_espera']}{" "*(10-len(str(proceso['tiempo_espera'])))}: {proceso['tiempo_respuesta']}{" "*(13-len(str(proceso['tiempo_respuesta'])))}: {proceso['tiempo_servicio']}{" "*(12-len(str(proceso['tiempo_servicio'])))}: {proceso['tiempo_retorno']}{" "*(11-len(str(proceso['tiempo_retorno'])))}: {proceso['tiempo_finalizacion']}{" "*(16-len(str(proceso['tiempo_finalizacion'])))}:"
+        #tabla = f": {proceso['numero_programa']}{" "*(8-len(str(proceso['numero_programa'])))}: {proceso['tiempo_llegada']}{" "*(11-len(str(proceso['tiempo_llegada'])))}: {proceso['tiempo_espera']}{" "*(10-len(str(proceso['tiempo_espera'])))}: {proceso['tiempo_respuesta']}{" "*(13-len(str(proceso['tiempo_respuesta'])))}: {proceso['tiempo_servicio']}{" "*(12-len(str(proceso['tiempo_servicio'])))}: {proceso['tiempo_retorno']}{" "*(11-len(str(proceso['tiempo_retorno'])))}: {proceso['tiempo_finalizacion']}{" "*(16-len(str(proceso['tiempo_finalizacion'])))}:"
+        tabla = ": {:<8}: {:<11}: {:<10}: {:<13}: {:<12}: {:<11}: {:<16}:"
+        tabla = tabla.format(proceso['numero_programa'], proceso['tiempo_llegada'], proceso['tiempo_espera'], proceso['tiempo_respuesta'], proceso['tiempo_servicio'], proceso['tiempo_retorno'], proceso['tiempo_finalizacion'])
+
         file.write(f"{tabla}\n")
 
 #Funcion para escribir resultados a un archivo
@@ -124,21 +127,21 @@ def resultados_a_txt():
     calculos = []
     with open('Resultados.txt', 'w') as file:            
         for proceso in lotes_terminados: #Muestra los procesos terminados
-            if type(proceso) == str:
-                file.write(f"{proceso}\n\n")
+            # if type(proceso) == str:
+            #     file.write(f"{proceso}\n\n")
+            # else:
+            calculos.append(proceso)
+            if proceso['error']:
+                file.write(f"{proceso['numero_programa']}. {proceso['nombre']}\n{proceso['operacion']}\n\n")
             else:
-                calculos.append(proceso)
-                if proceso['error']:
-                    file.write(f"{proceso['numero_programa']}. {proceso['nombre']}\n{proceso['operacion']}\n\n")
-                else:
-                    resultado = round(eval(proceso['operacion']), 4)
-                    file.write(f"{proceso['numero_programa']}. {proceso['nombre']}\n{proceso['operacion']} = {resultado}\n\n")
+                resultado = round(eval(proceso['operacion']), 4)
+                file.write(f"{proceso['numero_programa']}. {proceso['nombre']}\n{proceso['operacion']} = {resultado}\n\n")
         tabla_calculos_tiempos(calculos, file)
 
 
 def en_espera(lotes, procesosEnEspera_text):
     global end_lote, tiempo_en_espera
-    lote_actual = lotes[0]
+    lote_actual = lotes
 
     if len(lote_actual) == 1:  # Si solo queda un proceso en el lote actual
         end_lote = True
@@ -161,7 +164,7 @@ def en_espera(lotes, procesosEnEspera_text):
 def en_ejecucion(lotes, ejecucion_text, tiempo_inicio_proceso):
     global tiempo_transcurrido_proceso
     
-    lote_actual = lotes[0]  # Toma el primer lote
+    lote_actual = lotes # Toma el primer lote
     procesoEnEjecucion = lote_actual[0]  # Toma el primer proceso en espera
     
     if tiempo_inicio_proceso is None:  # Si es la primera vez que se llama a la función para este proceso
@@ -195,23 +198,23 @@ def en_ejecucion(lotes, ejecucion_text, tiempo_inicio_proceso):
 
 
 def terminados(lotes, terminados_text, procesos_terminados, tiempo_restante, tiempo_inicio_proceso, ejecucion_text, obtenerResultadosBtn):
-    lote_actual = lotes[0]
+    lote_actual = lotes
     global num_lote, cont_procesos, lotes_terminados, end_lote
     
     if tiempo_restante <= 0: 
-        if len(procesos_terminados) == 0 or cont_procesos % 5 == 0:  # Si hemos terminado 5 procesos
-            procesos_terminados.append(f"Lote {num_lote}:")  # Añadimos el número de lote
-            num_lote += 1
+        # if len(procesos_terminados) == 0 or cont_procesos % 5 == 0:  # Si hemos terminado 5 procesos
+        #     procesos_terminados.append(f"Lote {num_lote}:")  # Añadimos el número de lote
+        #     num_lote += 1
         procesos_terminados.append(lote_actual.pop(0))  # Elimina el proceso de la lista de procesos en espera y lo añade a la lista de procesos terminados
         
         procesos_terminados[-1]['tiempo_finalizacion'] = round(time.time() - start_time + 1)   # Asigna el tiempo de finalización
         procesos_terminados[-1]['tiempo_retorno'] = procesos_terminados[-1]['tiempo_finalizacion'] - procesos_terminados[-1]['tiempo_llegada'] # Calcula el tiempo de retorno
         
         end_lote = False
-        cont_procesos += 1
+        #cont_procesos += 1
         tiempo_inicio_proceso = None  # Resetea el tiempo de inicio para el próximo proceso
         if not lote_actual:  # Si el lote actual está vacío
-            lotes.pop(0)  # Elimina el lote de la lista de lotes
+            # lotes.pop(0)  # Elimina el lote de la lista de lotes
             ejecucion_text.delete('1.0', END)
             
     terminados_text.delete('1.0', END)
@@ -242,7 +245,8 @@ def ejecutar_proceso(lotes, noLotesPendientes_label, ejecucion_text, root, proce
         en_espera(lotes, procesosEnEspera_text) #Funcion para mostrar los procesos en espera
         #Funcion para mostrar los procesos terminados
         tiempo_inicio_proceso = terminados(lotes, terminados_text, procesos_terminados, tiempo_restante, tiempo_inicio_proceso, ejecucion_text, obtenerResultadosBtn)
-        cantidad_procesos = sum(len(lote) for lote in lotes) - len(lotes[0]) if lotes else 0  # Suma de la cantidad de procesos en todos los lotes
+        total_procesos = len(lotes)
+        cantidad_procesos = total_procesos
         # Actualiza el número de lotes pendientes
         noLotesPendientes_label.config(text=f"# De procesos pendientes: {cantidad_procesos}")
         # Llama a la función de nuevo después de 1 segundo
@@ -252,7 +256,7 @@ def ejecutar_proceso(lotes, noLotesPendientes_label, ejecucion_text, root, proce
 def generar_procesos(noProcesos_entry, ejecucion_text, noLotesPendientes_label, root, procesosEnEspera_text, terminados_text, obtenerResultadosBtn, relojGlobal_label):
     global lotes
     n = int(noProcesos_entry.get())
-    crear_lotes(n)
+    crear_procesos(n)
     lotes_a_txt()
     update_clock(relojGlobal_label, root)  # Inicia el reloj 
     ejecutar_proceso(lotes, noLotesPendientes_label, ejecucion_text, root, procesosEnEspera_text, terminados_text, obtenerResultadosBtn)  # Inicia el "bucle"
@@ -261,7 +265,7 @@ def generar_procesos(noProcesos_entry, ejecucion_text, noLotesPendientes_label, 
 def interrumpir_proceso():
     global tiempo_transcurrido_proceso, end_lote
     if lotes:  # Si hay lotes
-        lote_actual = lotes[0]  # Toma el primer lote
+        lote_actual = lotes  # Toma el primer lote
         if lote_actual and end_lote == False:  # Si hay procesos en el lote
             proceso = lote_actual.pop(0)  # Toma y elimina el primer proceso
             proceso['tiempo_restante'] -= tiempo_transcurrido_proceso  # Actualiza el tiempo restante
@@ -273,7 +277,7 @@ def interrumpir_proceso():
 def terminar_proceso():
     global tiempo_transcurrido_proceso
     if lotes:  # Si hay lotes
-        lote_actual = lotes[0]  # Toma el primer lote
+        lote_actual = lotes  # Toma el primer lote
         if lote_actual:  # Si hay procesos en el lote
             proceso = lote_actual[0]  # Toma el primer proceso
             proceso['error'] = True  # Marca el proceso como interrumpido

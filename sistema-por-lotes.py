@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-from logic import update_clock, generar_procesos, resultados_a_txt, interrumpir_proceso, terminar_proceso
+from logic import generar_procesos, resultados_a_txt, interrumpir_proceso, terminar_proceso
 
 root = Tk()
 
