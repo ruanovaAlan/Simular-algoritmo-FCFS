@@ -9,6 +9,7 @@ start_time = None #Variable para el reloj
 tiempo_transcurrido_proceso = 0 #Variable para el tiempo transcurrido
 clock_running = True #Variable para validar si el reloj esta corriendo
 lote = [] #Array de lote
+procesos_para_txt = [] #Array de procesos para el archivo de texto
 lote_terminados = [] #Array de lote terminados
 end_lote = False #Variable para validar si el lote actual termino
 cont_procesos = 0 #Variable para contar los procesos terminados
@@ -55,7 +56,7 @@ def getOperacion():
 def crear_procesos(n):
     nombre_programadores = ['Alan', 'Juan', 'Jenny', 'Luis', 'Maria', 'Pedro', 'Sofia', 'Tom', 'Valeria', 'Ximena']
     num_programa = 1
-    global lote, nuevos_procesos
+    global lote, nuevos_procesos, procesos_para_txt
     #lote = []
     tiempo_llegada = 0
     for i in range(n):
@@ -77,7 +78,8 @@ def crear_procesos(n):
             'tiempo_respuesta': 0 # Tiempo transcurrido desde que llega hasta que es atendido por primera vez.
             
         }
-            
+
+        procesos_para_txt.append(proceso)    
         if num_programa < 6:
             lote.append(proceso)
         else:
@@ -93,13 +95,13 @@ def crear_procesos(n):
 
 #Funcion para escribir lote a un archivo
 def procesos_a_txt():
-    global lote
-    if lote != []:
+    global procesos_para_txt
+    if procesos_para_txt != []:
         with open('datos.txt', 'w') as file:
             # for i, lote in enumerate(lote, start=1):
             #     file.write(f'Lote {i}:\n')
             #     file.write('\n')
-            for proceso in lote:
+            for proceso in procesos_para_txt:
                 file.write(f"{proceso['numero_programa']}. {proceso['nombre']}\n")
                 file.write(f"{proceso['operacion']}\n")
                 file.write(f"TME: {proceso['tiempo_maximo']}\n")
