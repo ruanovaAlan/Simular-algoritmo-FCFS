@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-from logic import generar_procesos, resultados_a_txt, interrumpir_proceso, terminar_proceso
+from logic import update_clock, generar_procesos, resultados_a_txt, interrumpir_proceso, terminar_proceso, pausar_programa, continuar_programa
 
 root = Tk()
 
@@ -24,7 +24,9 @@ noLotesPendientes_label = ttk.Label(enEsperaFrame, text="# De procesos pendiente
 
 #contenido del frame "en ejecución"
 ejecucion_label = ttk.Label(ejecucionFrame, text="EN EJECUCIÓN") #Proceso en ejecución
-ejecucion_text = Text(ejecucionFrame, width=20, height=10)
+ejecucion_text = Text(ejecucionFrame, width=20, height=5)
+bloqueado_label = ttk.Label(ejecucionFrame, text="BLOQUEADO") 
+bloqueado_text = Text(ejecucionFrame, width=20, height=7)
 #----------------------------------
 
 #contenido del frame "terminados"
@@ -36,11 +38,10 @@ terminados_text = Text(terminadosFrame, width=20, height=20)
 
 #----- Botones ----- 
 #Generar procesos y obtener resultados
-generarBtn = ttk.Button(enEsperaFrame, command=lambda: generar_procesos(noProcesos_entry, ejecucion_text, noLotesPendientes_label, root, procesosEnEspera_text, terminados_text, obtenerResultadosBtn, relojGlobal_label), text="Generar")
+generarBtn = ttk.Button(enEsperaFrame, command=lambda: generar_procesos(noProcesos_entry, ejecucion_text, noLotesPendientes_label, root, procesosEnEspera_text, terminados_text, obtenerResultadosBtn, relojGlobal_label, bloqueado_text), text="Generar")
 obtenerResultadosBtn = ttk.Button(terminadosFrame, state='disabled', command=resultados_a_txt, text="OBTENER RESULTADOS")
 interrumpirBtn = ttk.Button(ejecucionFrame, text="INTERRUMPIR", command=interrumpir_proceso)
 errorBtn = ttk.Button(ejecucionFrame, text="ERROR", command=terminar_proceso)
-
 #--- Grid Layout ---
 content.grid(column=0, row=0)
 enEsperaFrame.grid(column=0, row=0, columnspan=2)
@@ -61,9 +62,11 @@ noLotesPendientes_label.grid(column=0, row=3, columnspan=2, pady=10)
 #en ejecución
 ejecucion_label.grid(column=0, row=0, columnspan=2, pady=10)
 ejecucion_text.grid(column=0, row=1, columnspan=2)
+bloqueado_label.grid(column=0, row=2, columnspan=2, pady=10)
+bloqueado_text.grid(column=0, row=3, columnspan=2)
 
-interrumpirBtn.grid(column=0, row=2, pady=30)
-errorBtn.grid(column=1, row=2, pady=30)
+interrumpirBtn.grid(column=0, row=4, pady=10)
+errorBtn.grid(column=1, row=4, pady=10)
 #------------------
 
 #terminados
